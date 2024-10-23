@@ -4,7 +4,7 @@ from pymongo import MongoClient
 import redis
 
 def get_db():
-    client = MongoClient(host='localhost',
+    client = MongoClient(host='db',
                          port=27017,
                          username='root',
                          password='pass',
@@ -13,12 +13,10 @@ def get_db():
     return db
 
 def get_redis():
-    r = redis.Redis(host='localhost',
+    r = redis.Redis(host='redis',
                     port=6379)
     return r
 
-
-# a quote
 class Quote(object):
     def __init__(self, quote, by):
         self.quote = quote
@@ -50,8 +48,7 @@ def quote():
             count = int(count) + 1
             r.set("count", count)
         pipe2 = [{ '$sample': { 'size': 1 } }]
-        result = db.quote_tb.aggregate(pipeline=pipe2).next()
-        print("here")
+        result = db.quote_tb.aggregate(pipeline=pipe2).try_next()
         app.logger.info(type(result))
         app.logger.info(result)
         if result:
